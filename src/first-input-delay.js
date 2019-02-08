@@ -47,8 +47,15 @@
       firstInputDelay = delay;
       firstInputTimeStamp = new Date;
 
-      eachEventType(removeEventListener);
       reportFirstInputDelayIfRecordedAndValid();
+    }
+  }
+
+  function clearFirstInputDelay() {
+    if (firstInputEvent) {
+      firstInputEvent = undefined;
+      firstInputDelay = undefined;
+      firstInputTimeStamp = undefined;
     }
   }
 
@@ -122,7 +129,7 @@
   function onInput(evt) {
     // Only count cancelable events, which should trigger behavior
     // important to the user.
-    if (evt.cancelable) {
+    if (evt.cancelable && !firstInputEvent) {
       // In some browsers `event.timeStamp` returns a `DOMTimeStamp` value
       // (epoch time) istead of the newer `DOMHighResTimeStamp`
       // (document-origin time). To check for that we assume any timestamp
@@ -169,4 +176,5 @@
   // Don't override the perfMetrics namespace if it already exists.
   self['perfMetrics'] = self['perfMetrics'] || {};
   self['perfMetrics']['onFirstInputDelay'] = onFirstInputDelay;
+  self['perfMetrics']['clearFirstInputDelay'] = clearFirstInputDelay;
 })(addEventListener, removeEventListener);
